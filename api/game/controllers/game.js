@@ -10,10 +10,8 @@ module.exports = {
     console.log('Starting to populate...')
 
     const options = {
-      sort: "popularity",
-      page: "3",
       ...ctx.query,
-    }
+    };
 
     await strapi.services.game.populate(options)
 

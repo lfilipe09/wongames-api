@@ -32,15 +32,10 @@ async function getGameInfo(slug) {
     const description = dom.window.document.querySelector('.description')
 
     return {
-      rating: ratingElement
-        ? ratingElement
-          .getAttribute("xlink:href")
-          .replace(/_/g, "")
-          .replace(/[^\w-]+/g, "")
-        : "FREE",
-      short_description: description.textContent.slice(0, 160),
-      description: description.innerHTML
-    }
+      rating: "BR0",
+      short_description: description.textContent.trim().slice(0, 160),
+      description: description.innerHTML,
+    };
   } catch (e) {
     console.log("getGameInfo", Exception(e))
   }
@@ -56,7 +51,7 @@ async function create(name, entityName) {
   if (!item) {
     return await strapi.services[entityName].create({
       name,
-      slug: slugify(name, { lower: true })
+      slug: slugify(name, { strict: true, lower: true })
     })
   } else {
     return item
@@ -179,6 +174,7 @@ module.exports = {
       const {
         data: { products },
       } = await axios.get(gogApiUrl);
+
       await createManytoManyData(products);
       await createGames(products);
     } catch (e) {

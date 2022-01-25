@@ -1,0 +1,39 @@
+//método para só ter o id do jogo, sem description e nada, para não precisar ficar fazendo mtos reduces
+const cartGamesIds = async (cart) => {
+  return await cart.map((game) => ({
+    id: game.id,
+  }));
+};
+
+const cartItems = async (cart) => {
+  let games = [];
+
+  await Promise.all(
+    cart?.map(async (game) => {
+      const validatedGame = await strapi.services.game.findOne({
+        id: game.id,
+      });
+
+      if (validatedGame) {
+        games.push(validatedGame);
+      }
+    })
+  );
+
+  return games;
+};
+
+const total = async (games) => {
+  const amount = await games.reduce((acc, game) => {
+    return acc + game.price;
+  }, 0);
+
+  //518.39123 * 100 === 51839; esse é um exemplo se o preço for mto quebrado, aí o tofixed corta e usa só o da frente
+  return Number((amount * 100).toFixed(0)); //garantir que não tenha casa decimal e coloca no number para garantir que é numero
+};
+
+module.exports = {
+  cartGamesIds,
+  cartItems,
+  total,
+};
